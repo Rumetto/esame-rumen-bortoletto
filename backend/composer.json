@@ -1,7 +1,16 @@
 {
+    "name": "rumetto/esame-its",
+    "description": "Backend API PHP Slim per il progetto d'esame ITS",
+    "license": "proprietary",
     "require": {
         "slim/slim": "4.*",
         "slim/psr7": "^1.8",
-        "firebase/php-jwt": "^7.1"
+        "firebase/php-jwt": "^7.1",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
     }
 }
