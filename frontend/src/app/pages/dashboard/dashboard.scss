@@ -1,0 +1,15 @@
+.page-heading p { margin: 0 0 .45rem; color: #1d4ed8; font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+h1 { margin: 0; color: #172033; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.05em; }
+.page-heading span { display: block; margin-top: .65rem; color: #64748b; }
+.alert { margin-top: 1.5rem; padding: .9rem 1rem; border-left: 4px solid #d97706; border-radius: .4rem; color: #92400e; background: #fef3c7; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+.cards a { min-height: 9rem; display: flex; flex-direction: column; padding: 1.25rem; border: 1px solid #e2e8f0; border-radius: 1rem; color: inherit; background: #fff; box-shadow: 0 .4rem 1.2rem #0f172a0a; text-decoration: none; transition: .2s; }
+.cards a:hover { transform: translateY(-2px); border-color: #93c5fd; box-shadow: 0 .8rem 1.8rem #0f172a12; }
+.cards b { color: #172033; font-size: 1.05rem; }
+.cards span { margin-top: .55rem; color: #64748b; font-size: .88rem; line-height: 1.5; }
+.cards em { margin-top: auto; color: #1d4ed8; font-size: .82rem; font-style: normal; font-weight: 800; }
+.identity { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; padding: 1.3rem; border-radius: 1rem; color: #fff; background: #172554; }
+.identity div { display: grid; gap: .25rem; }
+.identity small { color: #93c5fd; }
+.identity strong { overflow-wrap: anywhere; }
+@media (max-width: 850px) { .cards { grid-template-columns: 1fr; } .identity { grid-template-columns: 1fr; } }

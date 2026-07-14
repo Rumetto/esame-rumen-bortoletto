@@ -1,0 +1,30 @@
+<section class="page-header"><div><h1>{{ deadlineOnly ? 'Le mie scadenze' : 'I miei corsi' }}</h1><p>{{ deadlineOnly ? 'Controlla i corsi da completare e quelli già scaduti.' : 'Consulta le attività formative assegnate a te e registra i completamenti.' }}</p></div></section>
+@if (message()) { <div class="message" role="status">{{ message() }}</div> }
+@if (error()) { <div class="message error" role="alert">{{ error() }}</div> }
+
+<form class="panel filters" [formGroup]="filters">
+  <div class="field"><label for="employee-status-filter">Stato</label><select id="employee-status-filter" formControlName="stato"><option value="">Tutti</option>@for (status of statuses; track status) { <option [value]="status">{{ statusLabel(status) }}</option> }</select></div>
+  <div class="field"><label for="employee-category-filter">Categoria</label><select id="employee-category-filter" formControlName="categoria"><option value="">Tutte</option>@for (category of categories(); track category) { <option [value]="category">{{ category }}</option> }</select></div>
+  <div class="field"><label for="employee-due-from">Scadenza dal</label><input id="employee-due-from" type="date" formControlName="scadenza_da"></div>
+  <div class="field"><label for="employee-due-to">Scadenza al</label><input id="employee-due-to" type="date" formControlName="scadenza_a"></div>
+  <div class="actions"><button class="button secondary" type="button" (click)="resetFilters()">Azzera filtri</button></div>
+</form>
+
+<div class="course-grid">
+  @if (loading()) { <div class="panel loading">Caricamento corsi…</div> }
+  @else if (visibleAssignments().length === 0) { <div class="panel empty">Nessun corso corrisponde ai filtri selezionati.</div> }
+  @else { @for (item of visibleAssignments(); track item.id) {
+    <article class="course-card" [class.overdue]="item.stato === 'SCADUTO'">
+      <div class="card-top"><span class="category">{{ item.corso.categoria }}</span><span class="badge {{ item.stato }}">{{ statusLabel(item.stato) }}</span></div>
+      <h2>{{ item.corso.titolo }}</h2><p>{{ item.corso.descrizione }}</p>
+      <dl><div><dt>Durata</dt><dd>{{ item.corso.durata_ore }} ore</dd></div><div><dt>Assegnato</dt><dd>{{ item.data_assegnazione }}</dd></div><div><dt>Scadenza</dt><dd>{{ item.data_scadenza }}</dd></div><div><dt>Completato</dt><dd>{{ item.data_completamento ?? '—' }}</dd></div></dl>
+      <div class="actions"><button class="button secondary" type="button" (click)="showDetail(item)">Dettaglio</button>@if (canComplete(item)) { <button class="button" type="button" (click)="complete(item)" [disabled]="completing() === item.id">{{ completing() === item.id ? 'Salvataggio…' : 'Segna completato' }}</button> }</div>
+    </article>
+  } }
+</div>
+
+@if (selected(); as item) { <div class="modal-backdrop" (click)="closeDetail()"><section class="modal detail" (click)="$event.stopPropagation()">
+  <div class="card-top"><span class="category">{{ item.corso.categoria }}</span><span class="badge {{ item.stato }}">{{ statusLabel(item.stato) }}</span></div><h2>{{ item.corso.titolo }}</h2><p>{{ item.corso.descrizione }}</p>
+  <dl><div><dt>Durata prevista</dt><dd>{{ item.corso.durata_ore }} ore</dd></div><div><dt>Obbligatorietà</dt><dd>{{ item.corso.obbligatorio ? 'Obbligatorio' : 'Facoltativo' }}</dd></div><div><dt>Data assegnazione</dt><dd>{{ item.data_assegnazione }}</dd></div><div><dt>Data scadenza</dt><dd>{{ item.data_scadenza }}</dd></div><div><dt>Data completamento</dt><dd>{{ item.data_completamento ?? 'Non completato' }}</dd></div></dl>
+  <div class="actions"><button class="button secondary" type="button" (click)="closeDetail()">Chiudi</button>@if (canComplete(item)) { <button class="button" type="button" (click)="complete(item)">Segna completato</button> }</div>
+</section></div> }

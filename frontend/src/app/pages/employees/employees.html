@@ -1,0 +1,8 @@
+<section class="page-header"><div><h1>Dipendenti</h1><p>Elenco degli utenti attivi che possono ricevere corsi Academy.</p></div></section>
+@if (error()) { <div class="message error" role="alert">{{ error() }}</div> }
+<div class="panel search"><div class="field"><label for="employee-search">Cerca per nome, cognome o email</label><input id="employee-search" type="search" [formControl]="search" placeholder="Scrivi per cercare…"></div></div>
+<div class="panel table-wrap">
+  @if (loading()) { <div class="loading">Caricamento dipendenti…</div> }
+  @else if (visibleEmployees().length === 0) { <div class="empty">Nessun dipendente trovato.</div> }
+  @else { <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Ruolo</th></tr></thead><tbody>@for (employee of visibleEmployees(); track employee.id) { <tr><td>{{ employee.nome }}</td><td><strong>{{ employee.cognome }}</strong></td><td>{{ employee.email }}</td><td><span class="badge">Dipendente</span></td></tr> }</tbody></table> }
+</div>

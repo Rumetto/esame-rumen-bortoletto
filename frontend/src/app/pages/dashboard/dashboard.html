@@ -1,0 +1,33 @@
+<section class="page-heading">
+  <p>Dashboard</p>
+  <h1>Benvenuto, {{ user()?.nome }}</h1>
+  <span>
+    {{ user()?.ruolo === 'REFERENTE_ACADEMY'
+      ? 'Gestisci la formazione e monitora i progressi aziendali.'
+      : 'Consulta i corsi assegnati e organizza le tue scadenze.' }}
+  </span>
+</section>
+
+@if (accessDenied) {
+  <div class="alert" role="alert">Questa funzione non è disponibile per il tuo ruolo.</div>
+}
+
+@if (user()?.ruolo === 'REFERENTE_ACADEMY') {
+  <section class="cards" aria-label="Funzioni referente Academy">
+    <a routerLink="/academy/corsi"><b>Catalogo corsi</b><span>Crea, modifica e disattiva i corsi Academy.</span><em>Apri →</em></a>
+    <a routerLink="/academy/dipendenti"><b>Dipendenti</b><span>Consulta gli utenti a cui possono essere assegnati i corsi.</span><em>Visualizza →</em></a>
+    <a routerLink="/academy/assegnazioni"><b>Assegnazioni</b><span>Assegna i corsi e controlla gli stati.</span><em>Gestisci →</em></a>
+    <a routerLink="/academy/statistiche"><b>Statistiche</b><span>Analizza completamenti per mese e categoria.</span><em>Consulta →</em></a>
+  </section>
+} @else {
+  <section class="cards" aria-label="Funzioni dipendente">
+    <a routerLink="/dipendente/corsi"><b>I miei corsi</b><span>Consulta tutti i percorsi che ti sono stati assegnati.</span><em>Visualizza →</em></a>
+    <a routerLink="/dipendente/scadenze"><b>Le mie scadenze</b><span>Controlla le attività formative da completare.</span><em>Controlla →</em></a>
+  </section>
+}
+
+<section class="identity">
+  <div><small>Profilo attivo</small><strong>{{ user()?.nome }} {{ user()?.cognome }}</strong></div>
+  <div><small>Email</small><strong>{{ user()?.email }}</strong></div>
+  <div><small>Ruolo</small><strong>{{ user()?.ruolo === 'REFERENTE_ACADEMY' ? 'Referente Academy' : 'Dipendente' }}</strong></div>
+</section>

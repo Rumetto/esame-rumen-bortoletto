@@ -1,0 +1,370 @@
+{
+  "info": {
+    "_postman_id": "3f7e15da-0d44-4a6f-97a7-acde20260001",
+    "name": "Academy Aziendale API",
+    "description": "Collezione completa per testare autenticazione, utenti, corsi, assegnazioni e statistiche. Eseguire prima Login referente Academy per valorizzare automaticamente il token JWT.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8080/api" },
+    { "key": "token", "value": "" },
+    { "key": "courseId", "value": "1" },
+    { "key": "employeeId", "value": "2" },
+    { "key": "assignmentId", "value": "4" }
+  ],
+  "item": [
+    {
+      "name": "1 - Autenticazione",
+      "item": [
+        {
+          "name": "Login referente Academy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login riuscito', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Token JWT presente', () => pm.expect(body.token).to.be.a('string').and.not.empty);",
+                  "if (body.token) { pm.collectionVariables.set('token', body.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"academy@azienda.it\",\n  \"password\": \"Academy2026!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/utenti/login",
+            "description": "Autentica il referente e salva automaticamente il token nella variabile di collezione token."
+          }
+        },
+        {
+          "name": "Login dipendente Marco",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login riuscito', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "if (body.token) { pm.collectionVariables.set('token', body.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"marco.dipendente@azienda.it\",\n  \"password\": \"Dipendente2026!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/utenti/login",
+            "description": "Salva il token di Marco. Da eseguire prima dei test riservati al dipendente."
+          }
+        },
+        {
+          "name": "Credenziali errate - atteso 401",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"academy@azienda.it\",\n  \"password\": \"password-errata\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/utenti/login"
+          }
+        },
+        {
+          "name": "Profilo utente autenticato",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/utenti/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Logout riuscito', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.unset('token');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/utenti/logout",
+            "description": "Con JWT stateless il logout consiste nell'eliminazione del token dal client."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Utenti",
+      "item": [
+        {
+          "name": "Elenco dipendenti",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/utenti/dipendenti",
+            "description": "Solo REFERENTE_ACADEMY."
+          }
+        },
+        {
+          "name": "Crea dipendente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Paolo\",\n  \"cognome\": \"Test\",\n  \"email\": \"paolo.test@azienda.it\",\n  \"password\": \"Password2026!\",\n  \"ruolo\": \"DIPENDENTE\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/utenti/register",
+            "description": "Solo REFERENTE_ACADEMY. Una seconda esecuzione con la stessa email restituisce 409."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Catalogo corsi",
+      "item": [
+        {
+          "name": "Elenco corsi",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/corsi?categoria=Sicurezza&attivo=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["corsi"],
+              "query": [
+                { "key": "categoria", "value": "Sicurezza", "description": "Facoltativo" },
+                { "key": "attivo", "value": "true", "description": "Facoltativo: true/false" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dettaglio corso",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/corsi/{{courseId}}"
+          }
+        },
+        {
+          "name": "Crea corso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Corso creato', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "if (body.corso?.id) { pm.collectionVariables.set('courseId', body.corso.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titolo\": \"Leadership inclusiva\",\n  \"descrizione\": \"Corso pratico sulla gestione inclusiva dei gruppi di lavoro.\",\n  \"categoria\": \"Soft skill\",\n  \"durata_ore\": 4.5,\n  \"obbligatorio\": false,\n  \"attivo\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/corsi"
+          }
+        },
+        {
+          "name": "Modifica corso",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titolo\": \"Leadership inclusiva - avanzato\",\n  \"descrizione\": \"Versione aggiornata del corso sulla leadership inclusiva.\",\n  \"categoria\": \"Soft skill\",\n  \"durata_ore\": 6,\n  \"obbligatorio\": false,\n  \"attivo\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/corsi/{{courseId}}"
+          }
+        },
+        {
+          "name": "Disattiva corso",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/corsi/{{courseId}}/disattiva"
+          }
+        },
+        {
+          "name": "Elimina corso",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/corsi/{{courseId}}",
+            "description": "Restituisce 409 se il corso ha assegnazioni collegate."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Assegnazioni",
+      "item": [
+        {
+          "name": "Elenco assegnazioni con filtri",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/assegnazioni-corsi?stato=ASSEGNATO&categoria=Sicurezza&corso_id=&dipendente_id=&scadenza_da=&scadenza_a=",
+              "host": ["{{baseUrl}}"],
+              "path": ["assegnazioni-corsi"],
+              "query": [
+                { "key": "stato", "value": "ASSEGNATO", "description": "Facoltativo" },
+                { "key": "categoria", "value": "Sicurezza", "description": "Facoltativo" },
+                { "key": "corso_id", "value": "", "description": "Facoltativo" },
+                { "key": "dipendente_id", "value": "", "description": "Solo referente Academy" },
+                { "key": "scadenza_da", "value": "", "description": "YYYY-MM-DD" },
+                { "key": "scadenza_a", "value": "", "description": "YYYY-MM-DD" }
+              ]
+            },
+            "description": "Per un dipendente il backend ignora dipendente_id e restituisce sempre e soltanto le proprie assegnazioni."
+          }
+        },
+        {
+          "name": "Dettaglio assegnazione",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/assegnazioni-corsi/{{assignmentId}}"
+          }
+        },
+        {
+          "name": "Crea assegnazione",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Assegnazione creata', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "if (body.assegnazione?.id) { pm.collectionVariables.set('assignmentId', body.assegnazione.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"corso_id\": {{courseId}},\n  \"dipendente_id\": {{employeeId}},\n  \"data_assegnazione\": \"2026-07-14\",\n  \"data_scadenza\": \"2026-12-31\",\n  \"stato\": \"ASSEGNATO\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/assegnazioni-corsi"
+          }
+        },
+        {
+          "name": "Modifica assegnazione",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"corso_id\": {{courseId}},\n  \"dipendente_id\": {{employeeId}},\n  \"data_assegnazione\": \"2026-07-14\",\n  \"data_scadenza\": \"2026-11-30\",\n  \"stato\": \"ASSEGNATO\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/assegnazioni-corsi/{{assignmentId}}"
+          }
+        },
+        {
+          "name": "Completa assegnazione",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/assegnazioni-corsi/{{assignmentId}}/completa",
+            "description": "Solo DIPENDENTE e soltanto per un'assegnazione propria. Effettuare prima il login del dipendente interessato."
+          }
+        },
+        {
+          "name": "Annulla assegnazione",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/assegnazioni-corsi/{{assignmentId}}/annulla",
+            "description": "Solo REFERENTE_ACADEMY."
+          }
+        },
+        {
+          "name": "Annulla assegnazione con DELETE",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/assegnazioni-corsi/{{assignmentId}}",
+            "description": "Operazione equivalente all'annullamento: il record non viene eliminato fisicamente."
+          }
+        },
+        {
+          "name": "Date non valide - atteso 422",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"corso_id\": 1,\n  \"dipendente_id\": 2,\n  \"data_assegnazione\": \"2026-12-31\",\n  \"data_scadenza\": \"2026-01-01\",\n  \"stato\": \"ASSEGNATO\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/assegnazioni-corsi"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 - Statistiche",
+      "item": [
+        {
+          "name": "Statistiche Academy",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/statistiche/academy?mese=2026-05&categoria=Sicurezza&dipendente_id=",
+              "host": ["{{baseUrl}}"],
+              "path": ["statistiche", "academy"],
+              "query": [
+                { "key": "mese", "value": "2026-05", "description": "YYYY-MM; se presente prevale sul periodo" },
+                { "key": "categoria", "value": "Sicurezza", "description": "Facoltativo" },
+                { "key": "dipendente_id", "value": "", "description": "Facoltativo" },
+                { "key": "data_inizio", "value": "", "description": "Alternativo a mese, YYYY-MM-DD", "disabled": true },
+                { "key": "data_fine", "value": "", "description": "Alternativo a mese, YYYY-MM-DD", "disabled": true }
+              ]
+            },
+            "description": "Solo REFERENTE_ACADEMY. Restituisce assegnazioni, completamenti e percentuale raggruppati per mese e categoria."
+          }
+        }
+      ]
+    }
+  ]
+}

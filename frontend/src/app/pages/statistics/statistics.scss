@@ -1,0 +1,14 @@
+.filters { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.filters .actions { grid-column: 1 / -1; }
+.hint { color: #64748b !important; }
+.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+.summary article { display: grid; gap: .35rem; padding: 1.2rem; border-radius: 1rem; color: #fff; background: #172554; }
+.summary span { color: #bfdbfe; font-size: .78rem; font-weight: 700; }
+.summary strong { font-size: 1.8rem; }
+.progress { width: 100%; height: .42rem; overflow: hidden; border-radius: 999px; background: #dbeafe; }
+.progress i { display: block; height: 100%; border-radius: inherit; background: #2563eb; }
+.summary .progress { background: #ffffff26; }
+.summary .progress i { background: #fbbf24; }
+.percentage { min-width: 9rem; display: grid; gap: .35rem; }
+@media (max-width: 1050px) { .filters { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) { .summary, .filters { grid-template-columns: 1fr; } }

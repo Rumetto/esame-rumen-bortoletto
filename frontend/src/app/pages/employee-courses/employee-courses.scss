@@ -1,0 +1,16 @@
+.filters .actions { grid-column: span 4; }
+.course-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.course-grid > .panel { grid-column: 1 / -1; }
+.course-card { display: flex; flex-direction: column; padding: 1.2rem; border: 1px solid #e2e8f0; border-radius: 1rem; background: #fff; box-shadow: 0 .35rem 1rem #0f172a08; }
+.course-card.overdue { border-left: 4px solid #dc2626; }
+.card-top { display: flex; justify-content: space-between; gap: 1rem; }
+.category { color: #1d4ed8; font-size: .75rem; font-weight: 800; text-transform: uppercase; }
+h2 { margin: .8rem 0 .35rem; color: #172033; font-size: 1.2rem; }
+p { flex: 1; color: #64748b; line-height: 1.5; }
+dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: .7rem; margin: 1rem 0; }
+dl div { display: grid; gap: .15rem; }
+dt { color: #64748b; font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+dd { margin: 0; color: #172033; font-weight: 700; }
+.detail p { min-height: auto; }
+@media (max-width: 900px) { .course-grid { grid-template-columns: 1fr; } .filters .actions { grid-column: span 2; } }
+@media (max-width: 600px) { .filters .actions { grid-column: auto; } dl { grid-template-columns: 1fr; } }

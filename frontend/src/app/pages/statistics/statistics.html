@@ -1,0 +1,24 @@
+<section class="page-header"><div><h1>Statistiche Academy</h1><p>Riepilogo dei corsi assegnati e completati, aggregato per mese e categoria.</p></div></section>
+@if (error()) { <div class="message error" role="alert">{{ error() }}</div> }
+<form class="panel filters" [formGroup]="filters">
+  <div class="field"><label for="stats-month">Mese</label><input id="stats-month" type="month" formControlName="mese"><small class="hint">Se indicato, sostituisce il periodo.</small></div>
+  <div class="field"><label for="stats-from">Periodo dal</label><input id="stats-from" type="date" formControlName="data_inizio" [disabled]="!!filters.controls.mese.value"></div>
+  <div class="field"><label for="stats-to">Periodo al</label><input id="stats-to" type="date" formControlName="data_fine" [disabled]="!!filters.controls.mese.value"></div>
+  <div class="field"><label for="stats-category">Categoria</label><select id="stats-category" formControlName="categoria"><option value="">Tutte</option>@for (category of categories(); track category) { <option [value]="category">{{ category }}</option> }</select></div>
+  <div class="field"><label for="stats-employee">Dipendente</label><select id="stats-employee" formControlName="dipendente_id"><option value="">Tutti</option>@for (employee of employees(); track employee.id) { <option [value]="employee.id">{{ employee.cognome }} {{ employee.nome }}</option> }</select></div>
+  <div class="actions"><button class="button secondary" type="button" (click)="resetFilters()">Azzera</button></div>
+</form>
+
+<section class="summary" aria-label="Totali del riepilogo">
+  <article><span>Assegnazioni</span><strong>{{ totalAssigned() }}</strong></article>
+  <article><span>Completamenti</span><strong>{{ totalCompleted() }}</strong></article>
+  <article><span>Completamento complessivo</span><strong>{{ totalPercentage() }}%</strong><div class="progress"><i [style.width.%]="totalPercentage()"></i></div></article>
+</section>
+
+<div class="panel table-wrap">
+  @if (loading()) { <div class="loading">Calcolo statistiche…</div> }
+  @else if (statistics().length === 0) { <div class="empty">Nessun dato disponibile per i filtri selezionati.</div> }
+  @else { <table><thead><tr><th>Mese</th><th>Categoria</th><th>Corsi assegnati</th><th>Corsi completati</th><th>Percentuale</th></tr></thead><tbody>
+    @for (row of statistics(); track row.mese + row.categoria) { <tr><td><strong>{{ row.mese }}</strong></td><td>{{ row.categoria }}</td><td>{{ row.numeroAssegnazioni }}</td><td>{{ row.numeroCompletamenti }}</td><td><div class="percentage"><span>{{ row.percentualeCompletamento }}%</span><div class="progress"><i [style.width.%]="row.percentualeCompletamento"></i></div></div></td></tr> }
+  </tbody></table> }
+</div>
