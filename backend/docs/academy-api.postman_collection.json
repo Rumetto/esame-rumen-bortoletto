@@ -144,11 +144,11 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Paolo\",\n  \"cognome\": \"Test\",\n  \"email\": \"paolo.test@azienda.it\",\n  \"password\": \"Password2026!\",\n  \"ruolo\": \"DIPENDENTE\"\n}",
+              "raw": "{\n  \"nome\": \"Paolo\",\n  \"cognome\": \"Test\",\n  \"email\": \"paolo.test@azienda.it\",\n  \"password\": \"Password2026!\"\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": "{{baseUrl}}/utenti/register",
-            "description": "Solo REFERENTE_ACADEMY. Una seconda esecuzione con la stessa email restituisce 409."
+            "description": "Solo REFERENTE_ACADEMY. Il backend assegna sempre il ruolo DIPENDENTE; una seconda esecuzione con la stessa email restituisce 409."
           }
         }
       ]

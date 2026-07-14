@@ -21,6 +21,13 @@ export interface Employee {
   email: string;
 }
 
+export interface EmployeePayload {
+  nome: string;
+  cognome: string;
+  email: string;
+  password: string;
+}
+
 export interface Assignment {
   id: number;
   data_assegnazione: string;

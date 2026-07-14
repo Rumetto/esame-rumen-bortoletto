@@ -14,8 +14,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class AuthController
 {
-    private const ROLES = ['DIPENDENTE', 'REFERENTE_ACADEMY'];
-
     public function __construct(
         private readonly PDO $database,
         private readonly JwtService $jwtService
@@ -87,7 +85,9 @@ final class AuthController
         $surname = trim((string) ($data['cognome'] ?? ''));
         $email = strtolower(trim((string) ($data['email'] ?? '')));
         $password = (string) ($data['password'] ?? '');
-        $role = strtoupper(trim((string) ($data['ruolo'] ?? '')));
+        // Questo endpoint è riservato al referente Academy e crea esclusivamente
+        // account dipendente: il ruolo non viene accettato dal client.
+        $role = 'DIPENDENTE';
         $errors = [];
 
         if ($name === '') {
@@ -116,14 +116,10 @@ final class AuthController
             $errors['password'] = 'La password deve contenere almeno 8 caratteri';
         }
 
-        if (!in_array($role, self::ROLES, true)) {
-            $errors['ruolo'] = 'Il ruolo deve essere DIPENDENTE o REFERENTE_ACADEMY';
-        }
-
         if ($errors !== []) {
             return JsonResponse::send($response, [
                 'success' => false,
-                'message' => 'Impossibile creare l’utente: verifica i dati inseriti',
+                'message' => 'Impossibile creare il dipendente: verifica i dati inseriti',
                 'errors' => $errors,
             ], 422);
         }
@@ -164,7 +160,7 @@ final class AuthController
 
         return JsonResponse::send($response, [
             'success' => true,
-            'message' => 'Utente creato con successo',
+            'message' => 'Dipendente creato con successo',
             'utente' => [
                 'id' => (int) $this->database->lastInsertId(),
                 'nome' => $name,

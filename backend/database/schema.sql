@@ -74,11 +74,9 @@ CREATE TABLE assegnazioni_corsi (
     INDEX idx_assegnazioni_date (data_assegnazione, data_scadenza)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Credenziali di test:
--- Referente: academy@azienda.it / Academy2026!
--- Dipendenti: *.dipendente@azienda.it / Dipendente2026!
--- Gli hash seguenti sono generati con password_hash() di PHP.
--- La stessa logica è visibile nel metodo register di AuthController.php.
+
+
+
 INSERT INTO utenti (id, nome, cognome, email, password, ruolo) VALUES
     (1, 'Laura', 'Bianchi', 'academy@azienda.it',
      '$2y$10$e6QBkTn9hKvBGcQofTJbTeL/enwqXZoZ73wNMCiq2oIckUo7MDehm', 'REFERENTE_ACADEMY'),
