@@ -8,6 +8,17 @@ Il progetto è organizzato come monorepo con separazione netta tra:
 - `backend/`: API REST PHP Slim;
 - MariaDB/MySQL: database relazionale.
 
+## Deployment pubblico
+
+- Frontend Angular: <https://esame-rumen-bortoletto.vercel.app>
+- Backend API: <https://rumen.alwaysdata.net/api>
+- Verifica servizi: <https://rumen.alwaysdata.net/api/health>
+- Collezione Postman: `backend/docs/academy-api.postman_collection.json`
+- Ambiente Postman locale: `backend/docs/academy-local.postman_environment.json`
+
+Tutte le API applicative, incluso l'endpoint di verifica, richiedono autenticazione
+tranne il login. Le credenziali degli utenti di test sono riportate di seguito.
+
 ## Requisiti
 
 - PHP 8.2 o successivo;
