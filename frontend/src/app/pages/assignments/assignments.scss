@@ -1,0 +1,4 @@
+.filters .actions { align-self: end; grid-column: span 4; }
+td:last-child { min-width: 10rem; }
+@media (max-width: 950px) { .filters .actions { grid-column: span 2; } }
+@media (max-width: 600px) { .filters .actions { grid-column: auto; } }

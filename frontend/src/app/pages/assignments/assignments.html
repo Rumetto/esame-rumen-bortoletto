@@ -1,0 +1,35 @@
+<section class="page-header"><div><h1>Gestione assegnazioni</h1><p>Assegna i corsi ai dipendenti e controlla lo stato della formazione.</p></div><button class="button" type="button" (click)="create()">+ Nuova assegnazione</button></section>
+@if (message()) { <div class="message" role="status">{{ message() }}</div> }
+@if (error()) { <div class="message error" role="alert">{{ error() }}</div> }
+
+<form class="panel filters" [formGroup]="filters">
+  <div class="field"><label for="assignment-employee-filter">Dipendente</label><select id="assignment-employee-filter" formControlName="dipendente_id"><option value="">Tutti</option>@for (employee of employees(); track employee.id) { <option [value]="employee.id">{{ employee.cognome }} {{ employee.nome }}</option> }</select></div>
+  <div class="field"><label for="assignment-course-filter">Corso</label><select id="assignment-course-filter" formControlName="corso_id"><option value="">Tutti</option>@for (course of courses(); track course.id) { <option [value]="course.id">{{ course.titolo }}</option> }</select></div>
+  <div class="field"><label for="assignment-category-filter">Categoria</label><select id="assignment-category-filter" formControlName="categoria"><option value="">Tutte</option>@for (category of categories(); track category) { <option [value]="category">{{ category }}</option> }</select></div>
+  <div class="field"><label for="assignment-status-filter">Stato</label><select id="assignment-status-filter" formControlName="stato"><option value="">Tutti</option>@for (status of statuses; track status) { <option [value]="status">{{ statusLabel(status) }}</option> }</select></div>
+  <div class="actions"><button class="button secondary" type="button" (click)="resetFilters()">Azzera</button></div>
+</form>
+
+<div class="panel table-wrap">
+  @if (loading()) { <div class="loading">Caricamento assegnazioni…</div> }
+  @else if (assignments().length === 0) { <div class="empty">Nessuna assegnazione trovata.</div> }
+  @else { <table><thead><tr><th>Dipendente</th><th>Corso</th><th>Assegnazione</th><th>Scadenza</th><th>Stato</th><th>Completamento</th><th>Azioni</th></tr></thead><tbody>
+    @for (item of assignments(); track item.id) { <tr>
+      <td><strong>{{ item.dipendente.cognome }} {{ item.dipendente.nome }}</strong><div class="muted">{{ item.dipendente.email }}</div></td>
+      <td><strong>{{ item.corso.titolo }}</strong><div class="muted">{{ item.corso.categoria }}</div></td>
+      <td>{{ item.data_assegnazione }}</td><td>{{ item.data_scadenza }}</td><td><span class="badge {{ item.stato }}">{{ statusLabel(item.stato) }}</span></td><td>{{ item.data_completamento ?? '—' }}</td>
+      <td><div class="actions"><button class="button secondary small" type="button" (click)="edit(item)">Modifica</button>@if (item.stato !== 'ANNULLATO') { <button class="button danger small" type="button" (click)="cancel(item)">Annulla</button> }</div></td>
+    </tr> }
+  </tbody></table> }
+</div>
+
+@if (editorOpen()) { <div class="modal-backdrop" (click)="closeEditor()"><form class="modal" [formGroup]="form" (ngSubmit)="save()" (click)="$event.stopPropagation()">
+  <h2>{{ editing() ? 'Modifica assegnazione' : 'Nuova assegnazione' }}</h2><div class="form-grid">
+    <div class="field wide"><label for="assignment-course">Corso *</label><select id="assignment-course" formControlName="corso_id"><option [ngValue]="null">Seleziona un corso</option>@for (course of courses(); track course.id) { @if (courseSelectable(course)) { <option [ngValue]="course.id">{{ course.titolo }} — {{ course.categoria }}{{ course.attivo ? '' : ' (non attivo)' }}</option> } }</select>@if (fieldErrors()['corso_id']) { <small>{{ fieldErrors()['corso_id'] }}</small> }</div>
+    <div class="field wide"><label for="assignment-employee">Dipendente *</label><select id="assignment-employee" formControlName="dipendente_id"><option [ngValue]="null">Seleziona un dipendente</option>@for (employee of employees(); track employee.id) { <option [ngValue]="employee.id">{{ employee.cognome }} {{ employee.nome }} — {{ employee.email }}</option> }</select>@if (fieldErrors()['dipendente_id']) { <small>{{ fieldErrors()['dipendente_id'] }}</small> }</div>
+    <div class="field"><label for="assignment-date">Data assegnazione *</label><input id="assignment-date" type="date" formControlName="data_assegnazione">@if (fieldErrors()['data_assegnazione']) { <small>{{ fieldErrors()['data_assegnazione'] }}</small> }</div>
+    <div class="field"><label for="assignment-due">Data scadenza *</label><input id="assignment-due" type="date" formControlName="data_scadenza">@if (fieldErrors()['data_scadenza']) { <small>{{ fieldErrors()['data_scadenza'] }}</small> }</div>
+    <div class="field"><label for="assignment-state">Stato *</label><select id="assignment-state" formControlName="stato">@for (status of statuses; track status) { <option [value]="status">{{ statusLabel(status) }}</option> }</select></div>
+    @if (form.controls.stato.value === 'COMPLETATO') { <div class="field"><label for="assignment-completion">Data completamento *</label><input id="assignment-completion" type="date" formControlName="data_completamento" [max]="today">@if (fieldErrors()['data_completamento']) { <small>{{ fieldErrors()['data_completamento'] }}</small> }</div> }
+  </div><div class="actions"><button class="button secondary" type="button" (click)="closeEditor()">Annulla</button><button class="button" type="submit" [disabled]="saving()">{{ saving() ? 'Salvataggio…' : 'Salva assegnazione' }}</button></div>
+</form></div> }

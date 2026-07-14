@@ -1,0 +1,81 @@
+<main class="login-page">
+  <section class="intro" aria-labelledby="academy-title">
+    <div class="brand"><span>A</span> Academy Hub</div>
+    <div>
+      <p class="eyebrow">Formazione aziendale</p>
+      <h1 id="academy-title">Crescere insieme, un corso alla volta.</h1>
+      <p class="lead">
+        Consulta i percorsi assegnati, rispetta le scadenze e segui i progressi
+        dell'Academy in un unico spazio.
+      </p>
+    </div>
+    <p class="copyright">Academy aziendale · Rumen Bortoletto</p>
+  </section>
+
+  <section class="form-side">
+    <form class="login-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mobile-brand"><span>A</span> Academy Hub</div>
+      <p class="eyebrow">Area riservata</p>
+      <h2>Bentornato</h2>
+      <p class="subtitle">Inserisci le credenziali aziendali per continuare.</p>
+
+      @if (sessionExpired) {
+        <div class="alert info" role="status">La sessione è scaduta. Accedi nuovamente.</div>
+      }
+      @if (errorMessage()) {
+        <div class="alert error" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <label for="email">Email aziendale</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        placeholder="nome@azienda.it"
+        [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched"
+      >
+      @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+        <small class="field-error">L'email è obbligatoria.</small>
+      } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
+        <small class="field-error">Inserisci un indirizzo email valido.</small>
+      }
+
+      <label for="password">Password</label>
+      <div class="password-field">
+        <input
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+          placeholder="La tua password"
+          [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
+        >
+        <button
+          type="button"
+          class="show-password"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-label]="showPassword() ? 'Nascondi password' : 'Mostra password'"
+        >{{ showPassword() ? 'Nascondi' : 'Mostra' }}</button>
+      </div>
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <small class="field-error">La password è obbligatoria.</small>
+      }
+
+      <button class="submit" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner" aria-hidden="true"></span> Accesso in corso...
+        } @else {
+          Accedi alla piattaforma
+        }
+      </button>
+
+      <div class="demo">
+        <strong>Credenziali referente</strong>
+        <span>academy&#64;azienda.it · Academy2026!</span>
+        <strong>Credenziali dipendente</strong>
+        <span>marco.dipendente&#64;azienda.it · Dipendente2026!</span>
+      </div>
+    </form>
+  </section>
+</main>

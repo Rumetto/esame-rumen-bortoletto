@@ -1,0 +1,29 @@
+<div class="shell">
+  <aside [class.open]="menuOpen()">
+    <a class="brand" routerLink="/dashboard" (click)="closeMenu()"><span>A</span> Academy Hub</a>
+    <nav aria-label="Navigazione principale">
+      @for (item of navigation(); track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" (click)="closeMenu()">
+          <span class="icon" aria-hidden="true">{{ item.icon }}</span>{{ item.label }}
+        </a>
+      }
+    </nav>
+    <div class="aside-footer">
+      <span class="avatar">{{ user()?.nome?.charAt(0) }}{{ user()?.cognome?.charAt(0) }}</span>
+      <div><strong>{{ user()?.nome }} {{ user()?.cognome }}</strong><small>{{ user()?.ruolo === 'REFERENTE_ACADEMY' ? 'Referente Academy' : 'Dipendente' }}</small></div>
+    </div>
+  </aside>
+
+  @if (menuOpen()) { <button class="backdrop" aria-label="Chiudi menu" (click)="closeMenu()"></button> }
+
+  <div class="content">
+    <header>
+      <button class="menu-button" type="button" (click)="menuOpen.set(true)" aria-label="Apri menu">☰</button>
+      <div class="welcome"><small>Area personale</small><strong>Ciao, {{ user()?.nome }}</strong></div>
+      <button class="logout" type="button" (click)="logout()" [disabled]="loggingOut()">
+        {{ loggingOut() ? 'Uscita...' : 'Esci' }}
+      </button>
+    </header>
+    <main><router-outlet /></main>
+  </div>
+</div>

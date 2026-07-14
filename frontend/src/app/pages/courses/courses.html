@@ -1,0 +1,46 @@
+<section class="page-header">
+  <div><h1>Catalogo corsi</h1><p>Crea e gestisci i corsi disponibili nell’Academy aziendale.</p></div>
+  <button class="button" type="button" (click)="create()">+ Nuovo corso</button>
+</section>
+
+@if (message()) { <div class="message" role="status">{{ message() }}</div> }
+@if (error()) { <div class="message error" role="alert">{{ error() }}</div> }
+
+<form class="panel filters" [formGroup]="filters" (ngSubmit)="load()">
+  <div class="field"><label for="course-category-filter">Categoria</label><select id="course-category-filter" formControlName="categoria"><option value="">Tutte</option>@for (category of categories(); track category) { <option [value]="category">{{ category }}</option> }</select></div>
+  <div class="field"><label for="course-status-filter">Stato</label><select id="course-status-filter" formControlName="attivo"><option value="">Tutti</option><option value="true">Attivi</option><option value="false">Non attivi</option></select></div>
+  <div class="actions"><button class="button" type="submit">Filtra</button><button class="button secondary" type="button" (click)="resetFilters()">Azzera</button></div>
+</form>
+
+<div class="panel table-wrap">
+  @if (loading()) { <div class="loading">Caricamento corsi…</div> }
+  @else if (courses().length === 0) { <div class="empty">Nessun corso corrisponde ai filtri selezionati.</div> }
+  @else {
+    <table><thead><tr><th>Corso</th><th>Categoria</th><th>Durata</th><th>Tipo</th><th>Stato</th><th>Azioni</th></tr></thead>
+      <tbody>@for (course of courses(); track course.id) { <tr>
+        <td><strong>{{ course.titolo }}</strong><div class="description">{{ course.descrizione }}</div></td>
+        <td>{{ course.categoria }}</td><td>{{ course.durata_ore }} ore</td><td>{{ course.obbligatorio ? 'Obbligatorio' : 'Facoltativo' }}</td>
+        <td><span class="badge" [class.active]="course.attivo" [class.inactive]="!course.attivo">{{ course.attivo ? 'Attivo' : 'Non attivo' }}</span></td>
+        <td><div class="actions"><button class="button secondary small" type="button" (click)="edit(course)">Modifica</button>@if (course.attivo) { <button class="button warning small" type="button" (click)="deactivate(course)">Disattiva</button> }<button class="button danger small" type="button" (click)="remove(course)">Elimina</button></div></td>
+      </tr> }</tbody>
+    </table>
+  }
+</div>
+
+@if (editorOpen()) {
+  <div class="modal-backdrop" (click)="closeEditor()">
+    <form class="modal" [formGroup]="form" (ngSubmit)="save()" (click)="$event.stopPropagation()">
+      <h2>{{ editing() ? 'Modifica corso' : 'Nuovo corso' }}</h2>
+      <div class="form-grid">
+        <div class="field wide"><label for="course-title">Titolo *</label><input id="course-title" formControlName="titolo">@if (form.controls.titolo.touched && form.controls.titolo.invalid) { <small>Inserisci un titolo valido.</small> }@if (fieldErrors()['titolo']) { <small>{{ fieldErrors()['titolo'] }}</small> }</div>
+        <div class="field"><label for="course-category">Categoria *</label><input id="course-category" formControlName="categoria" list="course-categories">@if (fieldErrors()['categoria']) { <small>{{ fieldErrors()['categoria'] }}</small> }</div>
+        <datalist id="course-categories">@for (category of categories(); track category) { <option [value]="category"></option> }</datalist>
+        <div class="field"><label for="course-duration">Durata in ore *</label><input id="course-duration" type="number" min="0.01" step="0.5" formControlName="durata_ore">@if (fieldErrors()['durata_ore']) { <small>{{ fieldErrors()['durata_ore'] }}</small> }</div>
+        <div class="field wide"><label for="course-description">Descrizione *</label><textarea id="course-description" formControlName="descrizione"></textarea>@if (fieldErrors()['descrizione']) { <small>{{ fieldErrors()['descrizione'] }}</small> }</div>
+        <label class="check"><input type="checkbox" formControlName="obbligatorio"> Corso obbligatorio</label>
+        <label class="check"><input type="checkbox" formControlName="attivo"> Corso attivo</label>
+      </div>
+      <div class="actions"><button class="button secondary" type="button" (click)="closeEditor()">Annulla</button><button class="button" type="submit" [disabled]="saving()">{{ saving() ? 'Salvataggio…' : 'Salva corso' }}</button></div>
+    </form>
+  </div>
+}
