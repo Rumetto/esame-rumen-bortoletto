@@ -1,4 +1,5 @@
-<section class="page-header"><div><h1>Dipendenti</h1><p>Elenco degli utenti attivi che possono ricevere corsi Academy.</p></div></section>
+<section class="page-header"><div><h1>Dipendenti</h1><p>Elenco degli utenti attivi che possono ricevere corsi Academy.</p></div><button class="button" type="button" (click)="create()">+ Nuovo dipendente</button></section>
+@if (message()) { <div class="message" role="status">{{ message() }}</div> }
 @if (error()) { <div class="message error" role="alert">{{ error() }}</div> }
 <div class="panel search"><div class="field"><label for="employee-search">Cerca per nome, cognome o email</label><input id="employee-search" type="search" [formControl]="search" placeholder="Scrivi per cercare…"></div></div>
 <div class="panel table-wrap">
@@ -6,3 +7,21 @@
   @else if (visibleEmployees().length === 0) { <div class="empty">Nessun dipendente trovato.</div> }
   @else { <table><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th>Ruolo</th></tr></thead><tbody>@for (employee of visibleEmployees(); track employee.id) { <tr><td>{{ employee.nome }}</td><td><strong>{{ employee.cognome }}</strong></td><td>{{ employee.email }}</td><td><span class="badge">Dipendente</span></td></tr> }</tbody></table> }
 </div>
+
+@if (editorOpen()) {
+  <div class="modal-backdrop" (click)="closeEditor()">
+    <form class="modal employee-form" [formGroup]="form" (ngSubmit)="save()" (click)="$event.stopPropagation()">
+      <h2>Nuovo dipendente</h2>
+      <p class="form-intro">Crea le credenziali iniziali. Il nuovo account avrà automaticamente il ruolo Dipendente.</p>
+      @if (error()) { <div class="message error" role="alert">{{ error() }}</div> }
+      <div class="form-grid">
+        <div class="field"><label for="employee-name">Nome *</label><input id="employee-name" formControlName="nome" autocomplete="given-name">@if (form.controls.nome.touched && form.controls.nome.invalid) { <small>Inserisci un nome valido.</small> }@if (fieldErrors()['nome']) { <small>{{ fieldErrors()['nome'] }}</small> }</div>
+        <div class="field"><label for="employee-surname">Cognome *</label><input id="employee-surname" formControlName="cognome" autocomplete="family-name">@if (form.controls.cognome.touched && form.controls.cognome.invalid) { <small>Inserisci un cognome valido.</small> }@if (fieldErrors()['cognome']) { <small>{{ fieldErrors()['cognome'] }}</small> }</div>
+        <div class="field wide"><label for="employee-email">Email aziendale *</label><input id="employee-email" type="email" formControlName="email" autocomplete="email">@if (form.controls.email.touched && form.controls.email.invalid) { <small>Inserisci un indirizzo email valido.</small> }@if (fieldErrors()['email']) { <small>{{ fieldErrors()['email'] }}</small> }</div>
+        <div class="field"><label for="employee-password">Password iniziale *</label><input id="employee-password" type="password" formControlName="password" autocomplete="new-password">@if (form.controls.password.touched && form.controls.password.invalid) { <small>Usa almeno 8 caratteri.</small> }@if (fieldErrors()['password']) { <small>{{ fieldErrors()['password'] }}</small> }</div>
+        <div class="field"><label for="employee-password-confirm">Conferma password *</label><input id="employee-password-confirm" type="password" formControlName="confermaPassword" autocomplete="new-password">@if (form.controls.confermaPassword.touched && form.controls.confermaPassword.hasError('required')) { <small>Conferma la password.</small> }@if (fieldErrors()['confermaPassword']) { <small>{{ fieldErrors()['confermaPassword'] }}</small> }</div>
+      </div>
+      <div class="actions"><button class="button secondary" type="button" (click)="closeEditor()">Annulla</button><button class="button" type="submit" [disabled]="saving()">{{ saving() ? 'Creazione…' : 'Crea dipendente' }}</button></div>
+    </form>
+  </div>
+}

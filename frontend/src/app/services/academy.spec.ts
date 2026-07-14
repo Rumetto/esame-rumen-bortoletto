@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
-import { AssignmentPayload } from '../models/academy.models';
+import { AssignmentPayload, EmployeePayload } from '../models/academy.models';
 import { AcademyService } from './academy';
 
 describe('AcademyService', () => {
@@ -37,6 +37,18 @@ describe('AcademyService', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual(payload);
     request.flush({ success: true, message: 'ok', assegnazione: {} });
+  });
+
+  it('crea un dipendente senza permettere di scegliere il ruolo', () => {
+    const payload: EmployeePayload = {
+      nome: 'Paolo', cognome: 'Test', email: 'paolo.test@azienda.it', password: 'Password2026!',
+    };
+    service.createEmployee(payload).subscribe();
+    const request = http.expectOne(`${environment.apiUrl}/utenti/register`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual(payload);
+    expect(request.request.body.ruolo).toBeUndefined();
+    request.flush({ success: true, message: 'Dipendente creato', utente: { id: 6, ...payload } });
   });
 
   it('usa l’endpoint protetto per completare un corso', () => {

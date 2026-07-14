@@ -2,12 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AcademyStatistic, Assignment, AssignmentPayload, Course, CoursePayload, Employee } from '../models/academy.models';
+import { AcademyStatistic, Assignment, AssignmentPayload, Course, CoursePayload, Employee, EmployeePayload } from '../models/academy.models';
 import { ApiMessage } from '../models/auth.models';
 
 interface CourseListResponse { success: true; totale: number; corsi: Course[]; }
 interface CourseResponse { success: true; message?: string; corso: Course; }
 interface EmployeeListResponse { success: true; totale: number; dipendenti: Employee[]; }
+interface EmployeeResponse { success: true; message: string; utente: Employee; }
 interface AssignmentListResponse { success: true; totale: number; assegnazioni: Assignment[]; }
 interface AssignmentResponse { success: true; message: string; assegnazione: Assignment; }
 interface StatisticsResponse { success: true; totale: number; statistiche: AcademyStatistic[]; }
@@ -34,6 +35,9 @@ export class AcademyService {
   }
   getEmployees(): Observable<EmployeeListResponse> {
     return this.http.get<EmployeeListResponse>(`${this.apiUrl}/utenti/dipendenti`);
+  }
+  createEmployee(payload: EmployeePayload): Observable<EmployeeResponse> {
+    return this.http.post<EmployeeResponse>(`${this.apiUrl}/utenti/register`, payload);
   }
   getAssignments(filters: Record<string, unknown> = {}): Observable<AssignmentListResponse> {
     return this.http.get<AssignmentListResponse>(`${this.apiUrl}/assegnazioni-corsi`, { params: this.params(filters) });
